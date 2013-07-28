@@ -27,3 +27,8 @@ Install and Run
 `npm install express`
 
 `node blackhole.js`
+
+Upload from the CLI
+-------------------
+
+`curl --form email='YOUR_EMAIL' --form file=@FILE http://HOST:PORT/upload`

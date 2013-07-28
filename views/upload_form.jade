@@ -3,8 +3,12 @@ html
     head
         title Eucalyptus Success Uploader
     body
-        h1 Upload File
+        h1 Eucalyptus Success Uploader
         form(method="POST", action="/upload", enctype="multipart/form-data")
+            fieldset
+                legend User
+                p
+                    input(type="text", name="email")
             fieldset
                 legend File
                 p

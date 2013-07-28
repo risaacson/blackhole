@@ -8,7 +8,10 @@ app.engine('jade', require('jade').__express);
 
 app.post("/upload", function (request, response) {                                               
     // request.files will contain the uploaded file(s),                                          
-    // keyed by the input name (in this case, "file")                                            
+    // keyed by the input name (in this case, "file")
+
+    // show the supplied e-mail 
+    console.log("e-mail", request.body.email);                                           
 
     // show the uploaded file name                                                               
     console.log("file name", request.files.file.name);                                           
@@ -22,4 +25,4 @@ app.get("/", function (request, response) {
     response.render("upload_form.jade");                                                         
 });                                                                                              
 
-app.listen(3000);
+app.listen(8081);
