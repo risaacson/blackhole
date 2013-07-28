@@ -1,0 +1,16 @@
+doctype 5
+html
+    head
+        title Eucalyptus Success Uploader
+    body
+        h1 Upload File
+        form(method="POST", action="/upload", enctype="multipart/form-data")
+            p
+                label(for="user[email]") E-mail:
+                input(type="text", name="user[email]", value=user.email)
+                .tip.
+                  Enter a valid e-mail address
+            p
+                input(type="file", name="file")
+            p
+                input(type="submit")
