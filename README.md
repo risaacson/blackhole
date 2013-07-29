@@ -25,6 +25,7 @@ Install and Run
 
 `npm install jade`
 `npm install express`
+`npm install nconf`
 
 `node blackhole.js`
 
