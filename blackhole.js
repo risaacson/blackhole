@@ -9,10 +9,15 @@ nconf.load();
 
 // TODO do some checking to make sure that our variables are here.
 // verify nconf.get('host')
+console.log('host: ' + nconf.get('host'));
 // verify nconf.get('port')
+console.log('port: ' + nconf.get('port'));
 // verify nconf.get('username')
+console.log('username: ' + nconf.get('username'));
 // verify nconf.get('password')
+console.log('password: ' + nconf.get('password'));
 // verify nconf.get('database')
+console.log('database: ' + nconf.get('database'));
 
 // Create the general object for using mysql.
 var mysql      = require('mysql');
@@ -23,6 +28,8 @@ var pool  = mysql.createPool({
   password : nconf.get('password'),
   database : nconf.get('database'),
 });
+console.log('pool: ' + pool);
+
 // pool.getConnection(function(err, connection) {
 //   TODO bomb out if the database goes down.
 //   TODO later figure out how to deal with waiting for a reconnect.
