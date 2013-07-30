@@ -89,7 +89,7 @@ function getBucket(email) {
 	// });
 }
 
-function deteleFile(file) {
+function deleteFile(file) {
 	// Asyncronously unlink the file.
 	fs.unlink(file, function (err) {
 		if (err) throw err;
