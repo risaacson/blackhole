@@ -45,9 +45,10 @@ function validateEmail(email) {
 function getBucket(email) {
 	pool.getConnection(function(err, connection) {
 	// Use the connection and make a query.
-	connection.query( 'SELECT bucket FROM buckets where email=' + email , function(err, rows) {
+	connection.query( 'SELECT bucket FROM email_to_bucket where email=' + email , function(err, rows) {
 		// And done with the connection.
 		connection.end();
+		console.log('rows' + rows);
  		// Don't use the connection here, it has been returned to the pool.
 		});
 	});
@@ -87,11 +88,15 @@ app.post("/upload", function (request, response) {
     		bucket = getBucket(request.body.email);
     	} catch(err) {
     		deleteFile(request.files.file.path);
+    		// TODO is this the right error for here?
+    		res.send(500, 'Something broke!');
     	}
     	// TODO asyncronously call an upload to the s3 bucket.
-    	response.end('upload complete');
+    	//response.end('upload complete');
+    	res.send(202, 'Accepted');
     } else {
     	deleteFile(request.files.file.path);
+    	res.send(500, 'Something broke!');
     }
                                                                  
 });                                                                                              
