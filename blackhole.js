@@ -40,7 +40,8 @@ function validateEmail(email) {
 }
 
 function query(sql, callback) {
-    client.query(sql, function (error, results, fields) {
+	console.log('connection: ' + connection)
+    connection.query(sql, function (error, results, fields) {
         if (error) {
             //
         }
@@ -55,6 +56,7 @@ function query(sql, callback) {
 // throw "empty bucket";
 function getBucket(email) {
 	pool.getConnection(function(err, connection) {
+		console.log('connection: ' + connection)
 	// // Use the connection and make a query.
 	// connection.query( 'SELECT bucket FROM email_to_bucket', function(err, rows) {
 	// 	// And done with the connection.
