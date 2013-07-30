@@ -124,14 +124,14 @@ app.post("/upload", function (request, response) {
     	} catch(err) {
     		deleteFile(request.files.file.path);
     		// TODO is this the right error for here?
-    		response.send(500, 'Something broke!');
+    		response.send(500, 'Unable to get bucket name.');
     	}
     	// TODO asyncronously call an upload to the s3 bucket.
     	//response.end('upload complete');
     	response.send(202, 'Accepted');
     } else {
     	deleteFile(request.files.file.path);
-    	response.send(500, 'Something broke!');
+    	response.send(500, 'E-mail is invaild.');
     }
                                                                  
 });                                                                                              
