@@ -83,8 +83,7 @@ function getBucket(email) {
  // 		// Don't use the connection here, it has been returned to the pool.
 	// 	});
 		query("SELECT bucket FROM email_to_bucket", function(results) {
-    		self.users = results;
-    		console.log(self.users);
+    		console.log('results' + results);
 		});
 	// });
 }
