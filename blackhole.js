@@ -54,7 +54,7 @@ function query(sql, connection, callback) {
             //
         }
         if (results.length  > 0) {
-        	console.out('results: ' + JSON.stringify(results));
+        	console.log('results: ' + JSON.stringify(results));
             callback(results);
         }
     });
