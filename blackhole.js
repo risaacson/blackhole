@@ -21,14 +21,14 @@ console.log('database: ' + nconf.get('database'));
 
 // Create the general object for using mysql.
 var mysql      = require('mysql');
-var pool  = mysql.createPool({
-  host     : nconf.get('host'),
-  port     : nconf.get('port'),
-  user     : nconf.get('username'),
-  password : nconf.get('password'),
-  database : nconf.get('database'),
-});
-console.log('pool: ' + pool);
+// var pool  = mysql.createPool({
+//   host     : nconf.get('host'),
+//   port     : nconf.get('port'),
+//   user     : nconf.get('username'),
+//   password : nconf.get('password'),
+//   database : nconf.get('database'),
+// });
+// console.log('pool: ' + pool);
 
 // pool.getConnection(function(err, connection) {
 //   TODO bomb out if the database goes down.
@@ -64,8 +64,17 @@ function query(sql, callback) {
 // throw "empty bucket";
 function getBucket(email) {
 	console.log('enter: getBucket');
-	pool.getConnection(function(err, connection) {
-		console.log('connection: ' + connection);
+
+	var connection  = mysql.createConnection({
+  		host     : nconf.get('host'),
+  		port     : nconf.get('port'),
+  		user     : nconf.get('username'),
+  		password : nconf.get('password'),
+  		database : nconf.get('database'),
+	});
+
+	// pool.getConnection(function(err, connection) {
+	console.log('connection: ' + connection);
 	// // Use the connection and make a query.
 	// connection.query( 'SELECT bucket FROM email_to_bucket', function(err, rows) {
 	// 	// And done with the connection.
@@ -77,7 +86,7 @@ function getBucket(email) {
     		self.users = results;
     		console.log(self.users);
 		});
-	});
+	// });
 }
 
 function deteleFile(file) {
