@@ -23,11 +23,11 @@ var pool  = mysql.createPool({
   password : nconf.get('password'),
   database : nconf.get('database'),
 });
-pool.getConnection(function(err, connection) {
-	// TODO bomb out if the database goes down.
-	// TODO later figure out how to deal with waiting for a reconnect.
-  // connected! (unless `err` is set)
-});
+// pool.getConnection(function(err, connection) {
+//   TODO bomb out if the database goes down.
+//   TODO later figure out how to deal with waiting for a reconnect.
+//     connected! (unless `err` is set)
+// });
 
 var express = require('express'),                                                           
     app = express();                                                                             
@@ -39,17 +39,32 @@ function validateEmail(email) {
     return re.test(email);
 }
 
+function query(sql, callback) {
+    client.query(sql, function (error, results, fields) {
+        if (error) {
+            //
+        }
+        if (results.length  > 0) {
+            callback(results);
+        }
+    });
+}
+
 // TODO finish off the logic here.
 // TODO if an empty response throw an exception
 // throw "empty bucket";
 function getBucket(email) {
 	pool.getConnection(function(err, connection) {
-	// Use the connection and make a query.
-	connection.query( 'SELECT bucket FROM email_to_bucket where email=' + email , function(err, rows) {
-		// And done with the connection.
-		connection.end();
-		console.log('rows' + rows);
- 		// Don't use the connection here, it has been returned to the pool.
+	// // Use the connection and make a query.
+	// connection.query( 'SELECT bucket FROM email_to_bucket', function(err, rows) {
+	// 	// And done with the connection.
+	// 	connection.end();
+	// 	console.log('rows' + rows);
+ // 		// Don't use the connection here, it has been returned to the pool.
+	// 	});
+		query("SELECT bucket FROM email_to_bucket", function(results) {
+    		self.users = results;
+    		console.log(self.users);
 		});
 	});
 }
