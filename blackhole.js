@@ -46,7 +46,7 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-function query(sql, callback) {
+function query(sql, connection, callback) {
 	console.log('enter: query');
 	console.log('connection: ' + connection)
     connection.query(sql, function (error, results, fields) {
@@ -82,7 +82,7 @@ function getBucket(email) {
 	// 	console.log('rows' + rows);
  // 		// Don't use the connection here, it has been returned to the pool.
 	// 	});
-		query("SELECT bucket FROM email_to_bucket", function(results) {
+		query("SELECT bucket FROM email_to_bucket", connection, function(results) {
     		console.log('results' + results);
 		});
 	// });
