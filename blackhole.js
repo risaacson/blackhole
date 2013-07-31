@@ -118,11 +118,12 @@ app.post("/upload", function (request, response) {
                 console.log('enter: emailInDatabase callback');
                 if(knownEmail) {
                     console.log('enter: knownEmail')
-                    bucket = getBucket(request.body.email, function(bucket) {
+                    getBucket(request.body.email, function(bucket) {
                         console.log('enter: getBucket callback')
                         console.log('bucket = ' + bucket);
                         response.send(202, 'Accepted');
                         // TODO Put S3 Code here.
+                        // uploadBucket = nconf.get('bucketprefix') + bucket;
                         // TODO If bucket does not exist create it.
                         // TODO When bucket exists upload file into it.
                         // TODO When file has been uploaded remove form local store.
