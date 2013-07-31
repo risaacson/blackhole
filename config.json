@@ -1,4 +1,5 @@
 {
+  "bucketprefix": "BUCKET_PREFIX",
   "host": "DB_HOST",
   "port": "DB_PORT",
   "username": "DB_USERNAME",
