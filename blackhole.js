@@ -8,64 +8,57 @@ nconf.use('file', { file: './config.json' });
 nconf.load();
 
 // TODO do some checking to make sure that our variables are here.
-// verify nconf.get('host')
-console.log('host: ' + nconf.get('host'));
-// verify nconf.get('port')
-console.log('port: ' + nconf.get('port'));
-// verify nconf.get('username')
-console.log('username: ' + nconf.get('username'));
-// verify nconf.get('password')
-console.log('password: ' + nconf.get('password'));
-// verify nconf.get('database')
-console.log('database: ' + nconf.get('database'));
 
-// Create the general object for using mysql.
 var mysql      = require('mysql');
-// var pool  = mysql.createPool({
-//   host     : nconf.get('host'),
-//   port     : nconf.get('port'),
-//   user     : nconf.get('username'),
-//   password : nconf.get('password'),
-//   database : nconf.get('database'),
-// });
-// console.log('pool: ' + pool);
-
-// pool.getConnection(function(err, connection) {
-//   TODO bomb out if the database goes down.
-//   TODO later figure out how to deal with waiting for a reconnect.
-//     connected! (unless `err` is set)
-// });
 
 var express = require('express'),                                                           
     app = express();                                                                             
 
 // From http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 // TODO make RFC 2822 compliant.
-function validateEmail(email) { 
+function validateEmail(email, callback) {
+    console.log('enter: validateEmail'); 
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
+    callback(re.test(email));
 }
 
 function query(sql, connection, callback) {
-	console.log('enter: query');
-	console.log('connection: ' + connection)
+    console.log('enter: query');
     connection.query(sql, function (error, results, fields) {
+        console.log('enter: connection.query callback');
         if (error) {
-            //
+            console.log('Error in query');
         }
         if (results.length  > 0) {
-        	console.log('results: ' + JSON.stringify(results));
             callback(results);
+        } else {
+            callback('zero');
         }
     });
 }
 
-// TODO finish off the logic here.
-// TODO if an empty response throw an exception
-// throw "empty bucket";
-function getBucket(email) {
-	console.log('enter: getBucket');
+function emailInDatabase(email, callback) {
+    console.log('enter: emailInDatabase');
+    var connection  = mysql.createConnection({
+        host     : nconf.get('host'),
+        port     : nconf.get('port'),
+        user     : nconf.get('username'),
+        password : nconf.get('password'),
+        database : nconf.get('database'),
+    });
 
+    query("SELECT email FROM email_to_bucket where email = " + connection.escape(email), connection, function(results) {
+        console.log('enter: emailInDatabase.query callback');
+        if(results != 'zero') {
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
+}
+
+function getBucket(email, callback) {
+    console.log('enter: getBucket');
 	var connection  = mysql.createConnection({
   		host     : nconf.get('host'),
   		port     : nconf.get('port'),
@@ -74,26 +67,21 @@ function getBucket(email) {
   		database : nconf.get('database'),
 	});
 
-	// pool.getConnection(function(err, connection) {
-	console.log('connection: ' + connection);
-	// // Use the connection and make a query.
-	// connection.query( 'SELECT bucket FROM email_to_bucket', function(err, rows) {
-	// 	// And done with the connection.
-	// 	connection.end();
-	// 	console.log('rows' + rows);
- // 		// Don't use the connection here, it has been returned to the pool.
-	// 	});
-		query("SELECT bucket FROM email_to_bucket where email = " + connection.escape(email), connection, function(results) {
-    		console.log('results' + results);
-		});
-	// });
+	query("SELECT bucket FROM email_to_bucket where email = " + connection.escape(email), connection, function(results) {
+        console.log('enter: getBucket.query callback');
+        if(results != 'zero') {
+		  callback(results[0].bucket);
+        }
+	});
 }
 
 function deleteFile(file) {
+    console.log('enter: deleteFile')
 	// Asyncronously unlink the file.
 	fs.unlink(file, function (err) {
+        console.log('enter: fs.unlink callback');
 		if (err) throw err;
-		console.log('successfully deleted' + file);
+		console.log('successfully deleted: ' + file);
 	});
 
 }
@@ -103,7 +91,8 @@ function deleteFile(file) {
 app.use(express.bodyParser({ keepExtensions: true, uploadDir: "uploads" }));                     
 app.engine('jade', require('jade').__express);                                                   
 
-app.post("/upload", function (request, response) {                                               
+app.post("/upload", function (request, response) {
+    console.log('enter: app.post callback');                                               
     // request.files will contain the uploaded file(s),                                          
     // keyed by the input name (in this case, "file")
 
@@ -118,22 +107,32 @@ app.post("/upload", function (request, response) {
     // TODO verify that the e-mail is a valid e-mail.
     // TODO check our database that the e-mail is known and get back the bucket name.
     // TODO if the e-mail is not valid or is not known delete the file and throw an error HTTP response. (Auth error?)
-    if(validateEmail(request.body.email)) {
-    	try {
-    		bucket = getBucket(request.body.email);
-    	} catch(err) {
-    		deleteFile(request.files.file.path);
-    		// TODO is this the right error for here?
-    		response.send(500, 'Unable to get bucket name.');
-    	}
-    	// TODO asyncronously call an upload to the s3 bucket.
-    	//response.end('upload complete');
-    	response.send(202, 'Accepted');
-    } else {
-    	deleteFile(request.files.file.path);
-    	response.send(500, 'E-mail is invaild.');
-    }
-                                                                 
+    validateEmail(request.body.email, function(validEmail) {
+        console.log('enter: validateEmail callback');
+        if(validEmail) {
+            console.log('enter: validEmail');
+            emailInDatabase(request.body.email, function(knownEmail) {
+                console.log('enter: emailInDatabase callback');
+                if(knownEmail) {
+                    console.log('enter: knownEmail')
+                    bucket = getBucket(request.body.email, function(bucket) {
+                        console.log('enter: getBucket callback')
+                        console.log('bucket = ' + bucket);
+                        response.send(202, 'Accepted');
+                        // TODO Put S3 Code here.
+                    });
+                } else {
+                    console.log('enter: not knownEmail');
+                    deleteFile(request.files.file.path);
+                    response.send(500, 'Unknown e-mail.');
+                }
+            });
+        } else {
+            console.log('enter: not validEmail');
+            deleteFile(request.files.file.path);
+            response.send(500, 'E-mail is invaild.');
+        }
+    });
 });                                                                                              
 
 // render file upload form                                                                       
