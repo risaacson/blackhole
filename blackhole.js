@@ -11,6 +11,9 @@ nconf.load();
 
 var mysql      = require('mysql');
 
+var AWS = require('aws-sdk');
+// AWS.config.update({region: 'us-west-2'});
+
 var express = require('express'),                                                           
     app = express();                                                                             
 
@@ -120,6 +123,9 @@ app.post("/upload", function (request, response) {
                         console.log('bucket = ' + bucket);
                         response.send(202, 'Accepted');
                         // TODO Put S3 Code here.
+                        // TODO If bucket does not exist create it.
+                        // TODO When bucket exists upload file into it.
+                        // TODO When file has been uploaded remove form local store.
                     });
                 } else {
                     console.log('enter: not knownEmail');
