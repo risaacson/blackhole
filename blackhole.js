@@ -13,6 +13,11 @@ var mysql      = require('mysql');
 
 var AWS = require('aws-sdk');
 // AWS.config.update({region: 'us-west-2'});
+var s3 = new AWS.S3({
+    accessKeyId: nconf.get(accesskey),
+    secretAccessKey: nconf.get(secretkey),
+    region: nconf.get(region);
+});
 
 var express = require('express'),                                                           
     app = express();                                                                             
@@ -37,6 +42,7 @@ function query(sql, connection, callback) {
         } else {
             callback('zero');
         }
+        connection.end();
     });
 }
 
@@ -122,11 +128,29 @@ app.post("/upload", function (request, response) {
                         console.log('enter: getBucket callback')
                         console.log('bucket = ' + bucket);
                         response.send(202, 'Accepted');
-                        // TODO Put S3 Code here.
-                        // uploadBucket = nconf.get('bucketprefix') + bucket;
-                        // TODO If bucket does not exist create it.
-                        // TODO When bucket exists upload file into it.
-                        // TODO When file has been uploaded remove form local store.
+                        // S3 Code
+                        var uploadBucket = nconf.get('bucketprefix') + bucket;
+                        s3.client.headBucket({bucket: 'uploadBucket'}, function(err, data){
+                            if(data == null) {
+                                s3.client.createBucket({
+                                    ACL: 'authenticated-read',
+                                    bucket: 'uploadBucket'
+                                }, function(err, data){
+                                    if(err) { throw err; }
+                                });
+                            }
+                            fs.readFile(request.files.file.path, function (err, data) {
+                                if (err) { throw err; }
+                                s3.client.putObject({
+                                    Bucket: uploadBucket,
+                                    Key: request.files.file.name,
+                                    Body: data
+                                }, function (res) {
+                                    console.log('Successfully uploaded file.');
+                                    deleteFile(request.files.file.path);
+                                })
+                            });
+                        });
                     });
                 } else {
                     console.log('enter: not knownEmail');
