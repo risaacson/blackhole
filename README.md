@@ -1,9 +1,7 @@
 blackhole
 =========
 
-HTTP upload to S3 Service
-
-blackhole is a part of the hopper project.
+A HTTP upload to S3 Service and subproject of hopper. blackhole is an upload service that provides a strict one way path for data.
 
 The a user will go to the root directory of the webserver, get a form allowing them enter in their e-mail address, select a file, and submit the form uploading the file.
 
