@@ -95,6 +95,50 @@ function deleteFile(file) {
 
 }
 
+function bucketExists(s3, name, callback) {
+    s3.headBucket({ Bucket: name }, function(err, data) {
+        console.log(JSON.stringify(err));
+        console.log(JSON.stringify(data));
+        if(data == null) { 
+            console.log('Bucket ' + name + ' does not exist');
+            callback(false);
+        } else {
+            console.log('Bucket ' + name + ' exists');
+            callback(true);
+        }
+    });
+}
+
+function createBucketIfMissing(s3, name, callback) {
+    bucketExists(s3, name, function(aBool) {
+        if(aBool) {
+            console.log('bucketExists callback: true');
+
+            callback(true);
+        } else {
+            console.log('bucketExists callback: false');
+            s3.createBucket({ 'Bucket': name }, function(err, data) {
+                console.log(JSON.stringify(err));
+                console.log(JSON.stringify(data));
+                if(err == null) { callback(true); }
+                if(data == null) { callback(false); }
+            });
+        }
+    });
+}
+
+function currentDateTime() {
+    var currentDate = new Date();
+    var dateTime = '' + currentDate.getFullYear()
+                + (((currentDate.getMonth()+1) < 10)?"0":"") + (currentDate.getMonth()+1)
+                + ((currentDate.getDate() < 10)?"0":"") + currentDate.getDate()
+                + ((currentDate.getHours() < 10)?"0":"") + currentDate.getHours()
+                + ((currentDate.getMinutes() < 10)?"0":"") + currentDate.getMinutes()
+                + ((currentDate.getSeconds() < 10)?"0":"") + currentDate.getSeconds();
+    return dateTime;
+}
+
+
 // tell express to use the bodyParser middleware                                                 
 // and set upload directory                                                                      
 app.use(express.bodyParser({ keepExtensions: true, uploadDir: "uploads" }));                     
