@@ -14,9 +14,9 @@ var mysql      = require('mysql');
 var AWS = require('aws-sdk');
 // AWS.config.update({region: 'us-west-2'});
 var s3 = new AWS.S3({
-    accessKeyId: nconf.get(accesskey),
-    secretAccessKey: nconf.get(secretkey),
-    region: nconf.get(region);
+    accessKeyId: nconf.get('accesskey'),
+    secretAccessKey: nconf.get('secretkey'),
+    region: nconf.get('region');
 });
 
 var express = require('express'),                                                           
@@ -85,7 +85,7 @@ function getBucket(email, callback) {
 }
 
 function deleteFile(file) {
-    console.log('enter: deleteFile')
+    console.log('enter: deleteFile');
 	// Asyncronously unlink the file.
 	fs.unlink(file, function (err) {
         console.log('enter: fs.unlink callback');
@@ -130,7 +130,7 @@ app.post("/upload", function (request, response) {
                         response.send(202, 'Accepted');
                         // S3 Code
                         var uploadBucket = nconf.get('bucketprefix') + bucket;
-                        s3.client.headBucket({bucket: 'uploadBucket'}, function(err, data){
+                        s3.client.headBucket({bucket: uploadBucket}, function(err, data){
                             if(data == null) {
                                 s3.client.createBucket({
                                     ACL: 'authenticated-read',
