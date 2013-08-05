@@ -118,7 +118,15 @@ var uploadBucket = nconf.get('bucketprefix') + bucket;
 console.log('bucket = ' + uploadBucket);
 
 createBucketIfMissing(s3, uploadBucket, function(aBool) {
-    if(aBool) { console.log ('score'); }
+    if(aBool) {
+        console.log ('score');
+        fs.readFile('/tmp/test.txt', function (err, data) {
+            if (err) { throw err; }
+            s3.client.putObject({ Bucket: uploadBucket, Key: 'test.txt', Body: data}, function() {
+                console.log('Successfully uploaded package.');
+            });
+        });
+    }
     else { console.log('fail'); }
 });
 
