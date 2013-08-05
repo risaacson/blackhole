@@ -1,7 +1,7 @@
 {
   "bucketprefix": "BUCKET_PREFIX",
-  "accessKey": "ACCESS_KEY",
-  "secretKey": "SECRET_KEY",
+  "accesskey": "ACCESS_KEY",
+  "secretkey": "SECRET_KEY",
   "region": "REGION",
   "host": "DB_HOST",
   "port": "DB_PORT",
