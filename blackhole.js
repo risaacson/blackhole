@@ -16,7 +16,7 @@ var AWS = require('aws-sdk');
 var s3 = new AWS.S3({
     accessKeyId: nconf.get('accesskey'),
     secretAccessKey: nconf.get('secretkey'),
-    region: nconf.get('region');
+    region: nconf.get('region')
 });
 
 var express = require('express'),                                                           
@@ -170,26 +170,35 @@ app.post("/upload", function (request, response) {
                     console.log('enter: knownEmail')
                     getBucket(request.body.email, function(bucket) {
                         console.log('enter: getBucket callback')
-                        console.log('bucket = ' + bucket);
+                        console.log('raw bucket = ' + bucket);
                         response.send(202, 'Accepted');
                         // S3 Code
                         var uploadBucket = nconf.get('bucketprefix') + bucket;
-                        s3.client.headBucket({bucket: uploadBucket}, function(err, data){
+                        console.log('bucket = ' + uploadBucket);
+                        s3.client.headBucket({ Bucket: uploadBucket }, function(err, data){
+                            console.log('enter: headBucket callback');
+                            console.log('headBucket err = ' + JSON.stringify(err));
+                            console.log('headbucket data = ' + JSON.stringify(data));
                             if(data == null) {
                                 s3.client.createBucket({
                                     ACL: 'authenticated-read',
-                                    bucket: 'uploadBucket'
+                                    bucket: uploadBucket
                                 }, function(err, data){
+                                    console.log('enter: createBucket callback');
+                                    console.log('createBucket err = ' + JSON.stringify(err));
+                                    console.log('createBucket data = ' + JSON.stringify(data));
                                     if(err) { throw err; }
                                 });
                             }
                             fs.readFile(request.files.file.path, function (err, data) {
+                                console.log('readFile err = ' + JSON.stringify(err));
+                                console.log('readFile data = ' + JSON.stringify(data));
                                 if (err) { throw err; }
                                 s3.client.putObject({
                                     Bucket: uploadBucket,
                                     Key: request.files.file.name,
                                     Body: data
-                                }, function (res) {
+                                }, function() {
                                     console.log('Successfully uploaded file.');
                                     deleteFile(request.files.file.path);
                                 })
