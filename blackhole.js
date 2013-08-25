@@ -194,21 +194,6 @@ app.post("/upload", function (request, response) {
                         var uploadBucket = nconf.get('bucketprefix') + bucket;
                         console.log('bucket = ' + uploadBucket);
                         createBucketIfMissing(s3, uploadBucket, function() {
-                        // s3.client.headBucket({ Bucket: uploadBucket }, function(err, data){
-                        //     console.log('enter: headBucket callback');
-                        //     console.log('headBucket err = ' + JSON.stringify(err));
-                        //     console.log('headbucket data = ' + JSON.stringify(data));
-                        //     if(data == null) {
-                        //         s3.client.createBucket({
-                        //             ACL: 'authenticated-read',
-                        //             bucket: uploadBucket
-                        //         }, function(err, data){
-                        //             console.log('enter: createBucket callback');
-                        //             console.log('createBucket err = ' + JSON.stringify(err));
-                        //             console.log('createBucket data = ' + JSON.stringify(data));
-                        //             if(err) { throw err; }
-                        //         });
-                        //     }
                             moveUploadtoS3(s3, uploadBucket, request.files.file);
                         });
                     });
