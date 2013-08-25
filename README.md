@@ -21,6 +21,9 @@ yum install -y nodejs npm
 git clone https://github.com/risaacson/blackhole.git
 cd blackhole
 
+# Edit the config file and add your values.
+${EDITOR} config.json
+
 npm install
 node blackhole.js
 ```
