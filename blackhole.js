@@ -95,33 +95,35 @@ function deleteFile(file) {
 
 }
 
-function bucketExists(s3, name, callback) {
-    s3.headBucket({ Bucket: name }, function(err, data) {
+// Check to see if the bucket exists.
+function bucketExists(s3, bucket, callback) {
+    s3.headBucket({ Bucket: bucket }, function(err, data) {
         console.log(JSON.stringify(err));
         console.log(JSON.stringify(data));
         if(data == null) { 
-            console.log('Bucket ' + name + ' does not exist');
+            console.log('Bucket ' + bucket + ' does not exist');
             callback(false);
         } else {
-            console.log('Bucket ' + name + ' exists');
+            console.log('Bucket ' + bucket + ' exists');
             callback(true);
         }
     });
 }
 
-function createBucketIfMissing(s3, name, callback) {
-    bucketExists(s3, name, function(aBool) {
+// Create the bucket if it is missing.
+function createBucketIfMissing(s3, bucket, callback) {
+    bucketExists(s3, bucket, function(aBool) {
         if(aBool) {
             console.log('bucketExists callback: true');
-
             callback(true);
         } else {
             console.log('bucketExists callback: false');
-            s3.createBucket({ 'Bucket': name }, function(err, data) {
+            s3.createBucket({ ACL: 'authenticated-read', 'Bucket': name }, function(err, data) {
                 console.log(JSON.stringify(err));
                 console.log(JSON.stringify(data));
-                if(err == null) { callback(true); }
-                if(data == null) { callback(false); }
+                if(err == null) {  } // Created
+                if(data == null) {  } // Not Created
+                callback();
             });
         }
     });
@@ -138,6 +140,22 @@ function currentDateTime() {
     return dateTime;
 }
 
+function moveUploadToS3(s3, bucket, file) {
+    console.log('enter: moveUploadToS3');
+    fs.readFile(file.path, function (err, data) {
+        console.log('readFile err = ' + JSON.stringify(err));
+        console.log('readFile data = ' + JSON.stringify(data));
+        if (err) { throw err; }
+        s3.client.putObject({
+            Bucket: uploadBucket,
+            Key: file.name,
+            Body: data
+        }, function() {
+            console.log('Successfully uploaded file.');
+            deleteFile(file.path);
+        })
+    });
+}
 
 // tell express to use the bodyParser middleware                                                 
 // and set upload directory                                                                      
@@ -175,34 +193,8 @@ app.post("/upload", function (request, response) {
                         // S3 Code
                         var uploadBucket = nconf.get('bucketprefix') + bucket;
                         console.log('bucket = ' + uploadBucket);
-                        s3.client.headBucket({ Bucket: uploadBucket }, function(err, data){
-                            console.log('enter: headBucket callback');
-                            console.log('headBucket err = ' + JSON.stringify(err));
-                            console.log('headbucket data = ' + JSON.stringify(data));
-                            if(data == null) {
-                                s3.client.createBucket({
-                                    ACL: 'authenticated-read',
-                                    bucket: uploadBucket
-                                }, function(err, data){
-                                    console.log('enter: createBucket callback');
-                                    console.log('createBucket err = ' + JSON.stringify(err));
-                                    console.log('createBucket data = ' + JSON.stringify(data));
-                                    if(err) { throw err; }
-                                });
-                            }
-                            fs.readFile(request.files.file.path, function (err, data) {
-                                console.log('readFile err = ' + JSON.stringify(err));
-                                console.log('readFile data = ' + JSON.stringify(data));
-                                if (err) { throw err; }
-                                s3.client.putObject({
-                                    Bucket: uploadBucket,
-                                    Key: request.files.file.name,
-                                    Body: data
-                                }, function() {
-                                    console.log('Successfully uploaded file.');
-                                    deleteFile(request.files.file.path);
-                                })
-                            });
+                        createBucketIfMissing(s3, uploadBucket, function() {
+                            moveUploadtoS3(s3, uploadBucket, request.files.file);
                         });
                     });
                 } else {
