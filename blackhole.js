@@ -22,6 +22,17 @@ var s3 = new AWS.S3({
 var express = require('express'),                                                           
     app = express();                                                                             
 
+function currentDateTime() {
+    var currentDate = new Date();
+    var dateTime = '' + currentDate.getFullYear()
+                + (((currentDate.getMonth()+1) < 10)?"0":"") + (currentDate.getMonth()+1)
+                + ((currentDate.getDate() < 10)?"0":"") + currentDate.getDate()
+                + ((currentDate.getHours() < 10)?"0":"") + currentDate.getHours()
+                + ((currentDate.getMinutes() < 10)?"0":"") + currentDate.getMinutes()
+                + ((currentDate.getSeconds() < 10)?"0":"") + currentDate.getSeconds();
+    return dateTime;
+}
+
 // From http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 // TODO make RFC 2822 compliant.
 function validateEmail(email, callback) {
@@ -127,17 +138,6 @@ function createBucketIfMissing(s3, bucket, callback) {
             });
         }
     });
-}
-
-function currentDateTime() {
-    var currentDate = new Date();
-    var dateTime = '' + currentDate.getFullYear()
-                + (((currentDate.getMonth()+1) < 10)?"0":"") + (currentDate.getMonth()+1)
-                + ((currentDate.getDate() < 10)?"0":"") + currentDate.getDate()
-                + ((currentDate.getHours() < 10)?"0":"") + currentDate.getHours()
-                + ((currentDate.getMinutes() < 10)?"0":"") + currentDate.getMinutes()
-                + ((currentDate.getSeconds() < 10)?"0":"") + currentDate.getSeconds();
-    return dateTime;
 }
 
 function moveUploadToS3(s3, bucket, file) {
