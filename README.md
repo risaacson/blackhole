@@ -12,7 +12,7 @@ An authenticated administrator is able to add a user's e-mail and then associate
 Install and Run
 ---------------
 
-```
+```Shell
 service iptables save; service iptables stop; chkconfig iptables off
 service ip6tables save; service ip6tables stop; chkconfig ip6tables off
 yum update -y; yum install -y git; reboot
