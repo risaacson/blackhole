@@ -200,7 +200,7 @@ app.post("/upload", function (request, response) {
                         console.log('' + trackingId + ' raw bucket = ' + bucket);
                         response.send(202, 'Accepted');
                         // S3 Code
-                        var uploadBucket = nconf.get('bucketprefix') + bucket;
+                        var uploadBucket = nconf.get('bucketprefix') + '--' + bucket;
                         console.log('' + trackingId + ' bucket = ' + uploadBucket);
                         createBucketIfMissing(trackingId, s3, uploadBucket, function() {
                             moveUploadToS3(trackingId, s3, uploadBucket, request.files.file);
