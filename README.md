@@ -12,7 +12,8 @@ An authenticated administrator is able to add a user's e-mail and then associate
 Install and Run
 ---------------
 
-`service iptables save; service iptables stop; chkconfig iptables off
+```
+service iptables save; service iptables stop; chkconfig iptables off
 service ip6tables save; service ip6tables stop; chkconfig ip6tables off
 yum update -y; yum install -y git; reboot
 yum install -y https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
@@ -21,7 +22,8 @@ git clone https://github.com/risaacson/blackhole.git
 cd blackhole
 
 npm install
-node blackhole.js`
+node blackhole.js
+```
 
 Upload from the CLI
 -------------------
