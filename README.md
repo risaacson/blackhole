@@ -12,20 +12,16 @@ An authenticated administrator is able to add a user's e-mail and then associate
 Install and Run
 ---------------
 
-`service iptables save; service iptables stop; chkconfig iptables off`
-`service ip6tables save; service ip6tables stop; chkconfig ip6tables off`
-`yum update -y; yum install -y git; reboot`
-`yum install -y https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm`
-`yum install -y nodejs npmyum nodejs-express nodejs-jade`
-`git clone https://github.com/risaacson/blackhole.git`
-`cd blackhole`
-`yum erase -y nodejs-express nodejs-jade nodejs-buffer-crc32 nodejs-bytes nodejs-commander nodejs-connect nodejs-cookie nodejs-cookie-signature nodejs-debug nodejs-formidable nodejs-fresh nodejs-keypress nodejs-methods nodejs-pause nodejs-range-parser nodejs-send`
+`service iptables save; service iptables stop; chkconfig iptables off
+service ip6tables save; service ip6tables stop; chkconfig ip6tables off
+yum update -y; yum install -y git; reboot
+yum install -y https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+yum install -y nodejs npm
+git clone https://github.com/risaacson/blackhole.git
+cd blackhole
 
-`npm install jade`
-`npm install express`
-`npm install nconf`
-
-`node blackhole.js`
+npm install
+node blackhole.js`
 
 Upload from the CLI
 -------------------
