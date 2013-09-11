@@ -9,15 +9,17 @@ blackhole when recieving the form data will check the database and if the e-mail
 
 An authenticated administrator is able to add a user's e-mail and then associate it to a company. (Through scripts.)
 
+We are using supervisor here as there are still some bugs that will take down the instance and but not something that corrupts the system.
+
 Install and Run
 ---------------
 
 ```Shell
 service iptables save; service iptables stop; chkconfig iptables off
 service ip6tables save; service ip6tables stop; chkconfig ip6tables off
-yum update -y; yum install -y git; reboot
+yum update -y; reboot
 yum install -y https://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
-yum install -y nodejs npm
+yum install -y git nodejs nodejs-supervisor npm
 git clone https://github.com/risaacson/blackhole.git
 cd blackhole
 
@@ -25,7 +27,7 @@ cd blackhole
 ${EDITOR} config.json
 
 npm install
-node blackhole.js
+supervisor blackhole.js
 ```
 
 Upload from the CLI
