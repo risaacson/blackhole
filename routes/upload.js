@@ -165,7 +165,7 @@ function moveUploadToS3(trackingId, s3, bucket, file) {
  * 
  */
 
-exports.upload = function(req, res){
+exports.upload = function(request, response){
     var trackingId = createTrackingId();
     console.log('' + trackingId + ' enter: app.post callback');
 
