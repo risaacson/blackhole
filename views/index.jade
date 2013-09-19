@@ -1,9 +1,6 @@
-doctype 5
-html
-    head
-        title Eucalyptus Success Uploader
-    body
-        h1 Eucalyptus Success Uploader
+extends layout
+
+h1= title
         form(method="POST", action="/upload", enctype="multipart/form-data")
             fieldset
                 legend User
