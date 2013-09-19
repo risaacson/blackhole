@@ -1,3 +1,26 @@
+// Might as well include the filesystem here.
+var fs = require('fs');
+
+var crypto = require('crypto');
+
+// Use nconf to get our config.
+var nconf = require('nconf');
+
+nconf.use('file', { file: './config.json' });
+nconf.load();
+
+// TODO do some checking to make sure that our variables are here.
+
+var mysql = require('mysql');
+
+var AWS = require('aws-sdk');
+// AWS.config.update({region: 'us-west-2'});
+var s3 = new AWS.S3({
+    accessKeyId: nconf.get('accesskey'),
+    secretAccessKey: nconf.get('secretkey'),
+    region: nconf.get('region')
+});
+
 function currentDateTime() {
     var currentDate = new Date();
     var dateTime = '' + currentDate.getFullYear()
