@@ -27,6 +27,7 @@ var s3 = new AWS.S3({
 
 var express = require('express')
   , routes = require('./routes')
+  , upload = require('./routes/upload')
   , http = require('http')
   , path = require('path');
 
@@ -50,7 +51,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.post('/upload', routes.upload);
+app.get('/upload', upload.upload);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
