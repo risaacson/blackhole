@@ -4,10 +4,10 @@
   "version": "0.0.2",
   "private": true,
   "dependencies": {
-    "aws-sdk": "1.5.0",
+    "aws-sdk": "1.7.1",
     "express": "3.3.5",
     "jade": "*",
-    "mysql": "2.0.0-alpha8",
+    "mysql": "2.0.0-alpha9",
     "nconf": "0.6.7",
     "winston": "0.7.2"
   },
