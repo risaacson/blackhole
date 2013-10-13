@@ -9,20 +9,26 @@ var nconf = require('nconf');
 nconf.use('file', { file: './config.json' });
 nconf.load();
 
-// TODO do some checking to make sure that our variables are here.
+// TODO do some checking to make sure that our values are here.
 
-var mysql      = require('mysql');
+var mysql = require('mysql');
 
 var AWS = require('aws-sdk');
-// AWS.config.update({region: 'us-west-2'});
-var s3 = new AWS.S3({
+if(nconf.get('logging').toLowerCase() === 'true') {
+  AWS.config.update({logger: process.stdout});
+}
+var awsOptions = {
     accessKeyId: nconf.get('accesskey'),
     secretAccessKey: nconf.get('secretkey'),
-    region: nconf.get('region')
-});
-
-var express = require('express'),                                                           
-    app = express();                                                                             
+};
+if(nconf.get('proxy').toLowerCase() !== "none") {
+  awsOptions['httpOptions'] = { proxy: nconf.get('proxy').toLowerCase() };
+}
+if(nconf.get('proxytype').toLowerCase() === "riakcs") {
+}else {
+  awsOptions['region'] = nconf.get('region').toLowerCase();
+}
+var s3 = new AWS.S3(awsOptions);
 
 function currentDateTime() {
     var currentDate = new Date();
@@ -107,8 +113,8 @@ function deleteFile(trackingId, file) {
 	// Asyncronously unlink the file.
 	fs.unlink(file, function (err) {
         console.log('' + trackingId + ' enter: fs.unlink callback');
-		if (err) throw err;
-		console.log('' + trackingId + ' successfully deleted: ' + file);
+		if (err) { console.log('' + trackingId + ' unlink error: ' + file); }
+		else { console.log('' + trackingId + ' successfully deleted: ' + file); }
 	});
 
 }
@@ -149,44 +155,35 @@ function createBucketIfMissing(trackingId, s3, bucket, callback) {
 
 function moveUploadToS3(trackingId, s3, bucket, file) {
     console.log('' + trackingId + ' enter: moveUploadToS3');
-    fs.readFile(file.path, function (err, data) {
-        console.log('' + trackingId + ' readFile err = ' + JSON.stringify(err));
-        // console.log('readFile data = ' + JSON.stringify(data));
-        if (err) { throw err; }
+    var stream = fs.createReadStream(file.path);
         s3.client.putObject({
             Bucket: bucket,
             Key: file.name,
-            Body: data
+            Body: stream
         }, function() {
             console.log('' + trackingId + ' Successfully uploaded file.');
             deleteFile(trackingId, file.path);
-        })
-    });
+        });
 }
 
-// tell express to use the bodyParser middleware                                                 
-// and set upload directory                                                                      
-app.use(express.bodyParser({ keepExtensions: true, uploadDir: "uploads" }));                     
-app.engine('jade', require('jade').__express);                                                   
+/*
+ * 
+ */
 
-app.post("/upload", function (request, response) {
+exports.upload = function(request, response){
     var trackingId = createTrackingId();
     console.log('' + trackingId + ' enter: app.post callback');
 
     // request.files will contain the uploaded file(s),                                          
     // keyed by the input name (in this case, "file")
 
-
     // show the supplied e-mail 
-    console.log('e-mail', request.body.email);                                           
+    console.log('' + trackingId + ' e-mail: ', request.body.email);                                           
 
-    // show the uploaded file name                                                               
-    console.log('file name', request.files.file.name);                                           
-    console.log('file path', request.files.file.path);                                           
+    // show the uploaded file name
+    console.log('' + trackingId + ' file name: ', request.files.file.name);                                           
+    console.log('' + trackingId + ' file path: ', request.files.file.path);                                           
 
-    // TODO verify that the e-mail is a valid e-mail.
-    // TODO check our database that the e-mail is known and get back the bucket name.
-    // TODO if the e-mail is not valid or is not known delete the file and throw an error HTTP response. (Auth error?)
     validateEmail(trackingId, request.body.email, function(validEmail) {
         console.log('' + trackingId + ' enter: validateEmail callback');
         if(validEmail) {
@@ -218,11 +215,4 @@ app.post("/upload", function (request, response) {
             response.send(500, 'E-mail is invaild.');
         }
     });
-});                                                                                              
-
-// render file upload form                                                                       
-app.get("/", function (request, response) {                                                      
-    response.render('upload_form.jade');                                                         
-});                                                                                              
-
-app.listen(8081);
+};

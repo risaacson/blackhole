@@ -1,18 +1,18 @@
 {
   "name": "blackhole",
   "description": "Accept file uploads and shuffle to a S3 bucket",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
-  	"aws-sdk": "1.5.0",
+    "aws-sdk": "1.7.1",
     "express": "3.3.5",
-    "jade": "0.35.0",
-    "mysql": "2.0.0-alpha8",
+    "jade": "*",
+    "mysql": "2.0.0-alpha9",
     "nconf": "0.6.7",
     "winston": "0.7.2"
   },
   "author": "risaacson",
-  "license": "GPLv2",
+  "license": "GPLv3",
   "repository": {
     "type": "git",
     "url": "https://github.com/risaacson/blackhole"
