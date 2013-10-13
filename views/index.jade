@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1= title
+    form(method="POST", action="/upload", enctype="multipart/form-data")
+      fieldset
+        legend User
+        p
+          input(type="text", name="email")
+      fieldset
+        legend File
+        p
+          input(type="file", name="file")
+        p
+          input(type="submit")

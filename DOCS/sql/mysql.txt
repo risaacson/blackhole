@@ -1,0 +1,22 @@
+delimiter $$
+
+CREATE TABLE `company_to_bucket` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `company` varchar(128) NOT NULL,
+  `bucket` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `company_UNIQUE` (`company`),
+  UNIQUE KEY `bucket_UNIQUE` (`bucket`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8$$
+
+delimiter $$
+
+CREATE TABLE `email_to_bucket` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(128) NOT NULL,
+  `bucket` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8$$
