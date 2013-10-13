@@ -1,0 +1,14 @@
+{
+  "bucketprefix": "BUCKET_PREFIX",
+  "logging": "false",
+  "accesskey": "ACCESS_KEY",
+  "secretkey": "SECRET_KEY",
+  "proxy": "none",
+  "proxytype": "PROXY_TYPE",
+  "region": "REGION",
+  "host": "DB_HOST",
+  "port": "DB_PORT",
+  "username": "DB_USERNAME",
+  "password": "DB_PASSWORD",
+  "database": "DB_DATABASE"
+}
