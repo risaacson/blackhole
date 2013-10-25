@@ -122,8 +122,8 @@ function deleteFile(trackingId, file) {
 // Check to see if the bucket exists.
 function bucketExists(trackingId, s3, bucket, callback) {
     s3.headBucket({ Bucket: bucket }, function(err, data) {
-        console.log(JSON.stringify(err));
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(err));
+        // console.log(JSON.stringify(data));
         if(data == null) { 
             console.log('' + trackingId + ' Bucket ' + bucket + ' does not exist');
             callback(false);
@@ -143,8 +143,8 @@ function createBucketIfMissing(trackingId, s3, bucket, callback) {
         } else {
             console.log('' + trackingId + ' bucketExists callback: false');
             s3.createBucket({ ACL: 'authenticated-read', 'Bucket': bucket }, function(err, data) {
-                console.log(JSON.stringify(err));
-                console.log(JSON.stringify(data));
+                // console.log(JSON.stringify(err));
+                // console.log(JSON.stringify(data));
                 if(err == null) {  } // Created
                 if(data == null) {  } // Not Created
                 callback();
@@ -166,6 +166,24 @@ function moveUploadToS3(trackingId, s3, bucket, file) {
         });
 }
 
+var request = require('request');
+function logToServer(trackingId, dateTime, email, bucket, fileName) {
+  var formData = { form: {
+    trackerId: trackingId,
+    dateTime: dateTime,
+    email: email,
+    bucket: bucket,
+    fileName: fileName
+  }};
+  request.post(nconf.get('loggingurl'), formData, function(error, response, body){
+    if(!error && response.statusCode == 200) {
+      console.log('' + trackingId + ' logging successful');
+    } else {
+      console.log('' + trackingId + ' logging failed');
+    }
+  });
+}
+
 /*
  * 
  */
@@ -178,11 +196,11 @@ exports.upload = function(request, response){
     // keyed by the input name (in this case, "file")
 
     // show the supplied e-mail 
-    console.log('' + trackingId + ' e-mail: ', request.body.email);                                           
+    // console.log('' + trackingId + ' e-mail: ', request.body.email);                                           
 
     // show the uploaded file name
-    console.log('' + trackingId + ' file name: ', request.files.file.name);                                           
-    console.log('' + trackingId + ' file path: ', request.files.file.path);                                           
+    // console.log('' + trackingId + ' file name: ', request.files.file.name);                                           
+    // console.log('' + trackingId + ' file path: ', request.files.file.path);                                           
 
     validateEmail(trackingId, request.body.email, function(validEmail) {
         console.log('' + trackingId + ' enter: validateEmail callback');
@@ -194,13 +212,14 @@ exports.upload = function(request, response){
                     console.log('' + trackingId + ' enter: knownEmail')
                     getBucket(trackingId, request.body.email, function(bucket) {
                         console.log('' + trackingId + ' enter: getBucket callback')
-                        console.log('' + trackingId + ' raw bucket = ' + bucket);
+                        // console.log('' + trackingId + ' raw bucket = ' + bucket);
                         response.send(202, 'Accepted');
                         // S3 Code
                         var uploadBucket = nconf.get('bucketprefix') + '--' + bucket;
                         console.log('' + trackingId + ' bucket = ' + uploadBucket);
                         createBucketIfMissing(trackingId, s3, uploadBucket, function() {
                             moveUploadToS3(trackingId, s3, uploadBucket, request.files.file);
+                            logToServer(trackingId, currentDateTime(), request.body.email, uploadBucket, request.files.file.name);
                         });
                     });
                 } else {

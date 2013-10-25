@@ -9,6 +9,7 @@
     "jade": "*",
     "mysql": "2.0.0-alpha9",
     "nconf": "0.6.7",
+    "request": "2.27.0",
     "winston": "0.7.2"
   },
   "author": "risaacson",
