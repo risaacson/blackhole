@@ -4,4 +4,12 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/eucalyptus.css')
   body
+  div(class='euca-container')
+    div(class='euca-header-container')
+      div(class='inner-container clearfix')
+        a(id='euca-logo', class='hide-text', href='/')= Eucalyptus
+        div#euca-navigator
+        div#euca-help
+        div#euca-user
+  div
     block content
