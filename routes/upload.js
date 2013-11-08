@@ -167,20 +167,31 @@ function moveUploadToS3(trackingId, s3, bucket, file) {
 }
 
 var request = require('request');
+var cheerio = require('cheerio');
 function logToServer(trackingId, dateTime, email, bucket, fileName) {
-  var formData = { form: {
-    trackerId: trackingId,
-    dateTime: dateTime,
-    email: email,
-    bucket: bucket,
-    fileName: fileName
-  }};
-  request.post(nconf.get('loggingurl'), formData, function(error, response, body){
+  request.get(nconf.get('loggingurl'), function(error, response, body) {
     if(!error && response.statusCode == 200) {
-      console.log('' + trackingId + ' logging successful');
+      console.log('' + trackingId + ' pre logging query successful');
     } else {
-      console.log('' + trackingId + ' logging failed');
+      console.log('' + trackingId + ' pre logging query  failed');
+      return;
     }
+    $ = cheerio.load(body, { ignoreWhitespace: true });
+    var formData = { form: {
+      trackerId: trackingId,
+      dateTime: dateTime,
+      email: email,
+      bucket: bucket,
+      fileName: fileName,
+      _csrf: $('input').attr('value')
+    }};
+    request.post(nconf.get('loggingurl'), formData, function(error, response, body){
+      if(!error && response.statusCode == 200) {
+        console.log('' + trackingId + ' logging successful');
+      } else {
+        console.log('' + trackingId + ' logging failed');
+      }
+    });
   });
 }
 

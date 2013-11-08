@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "aws-sdk": "1.7.1",
+    "cheerio": "0.12.3",
     "express": "3.3.5",
     "jade": "*",
     "mysql": "2.0.0-alpha9",
