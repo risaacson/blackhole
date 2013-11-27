@@ -22,22 +22,22 @@ var awsOptions = {
     secretAccessKey: nconf.get('secretkey'),
 };
 if(nconf.get('proxy').toLowerCase() !== "none") {
-  awsOptions['httpOptions'] = { proxy: nconf.get('proxy').toLowerCase() };
+  awsOptions.httpOptions = { proxy: nconf.get('proxy').toLowerCase() };
 }
 if(nconf.get('proxytype').toLowerCase() === "riakcs") {
 }else {
-  awsOptions['region'] = nconf.get('region').toLowerCase();
+  awsOptionsregion = nconf.get('region').toLowerCase();
 }
 var s3 = new AWS.S3(awsOptions);
 
 function currentDateTime() {
     var currentDate = new Date();
-    var dateTime = '' + currentDate.getFullYear()
-                + (((currentDate.getMonth()+1) < 10)?"0":"") + (currentDate.getMonth()+1)
-                + ((currentDate.getDate() < 10)?"0":"") + currentDate.getDate()
-                + ((currentDate.getHours() < 10)?"0":"") + currentDate.getHours()
-                + ((currentDate.getMinutes() < 10)?"0":"") + currentDate.getMinutes()
-                + ((currentDate.getSeconds() < 10)?"0":"") + currentDate.getSeconds();
+    var dateTime = '' + currentDate.getFullYear() +
+                     (((currentDate.getMonth()+1) < 10)?"0":"") + (currentDate.getMonth()+1) +
+                      ((currentDate.getDate() < 10)?"0":"") + currentDate.getDate() +
+                      ((currentDate.getHours() < 10)?"0":"") + currentDate.getHours() + 
+                      ((currentDate.getMinutes() < 10)?"0":"") + currentDate.getMinutes() +
+                      ((currentDate.getSeconds() < 10)?"0":"") + currentDate.getSeconds();
     return dateTime;
 }
 
@@ -93,17 +93,17 @@ function emailInDatabase(trackingId, email, callback) {
 function getBucket(trackingId, email, callback) {
     console.log('' + trackingId + ' enter: getBucket');
 	var connection  = mysql.createConnection({
-  		host     : nconf.get('host'),
-  		port     : nconf.get('port'),
-  		user     : nconf.get('username'),
-  		password : nconf.get('password'),
-  		database : nconf.get('database'),
+        host     : nconf.get('host'),
+        port     : nconf.get('port'),
+        user     : nconf.get('username'),
+        password : nconf.get('password'),
+        database : nconf.get('database'),
 	});
 
 	query(trackingId, "SELECT bucket FROM email_to_bucket where email = " + connection.escape(email), connection, function(results) {
         console.log('' + trackingId + ' enter: getBucket.query callback');
         if(results != 'zero') {
-		  callback(results[0].bucket);
+          callback(results[0].bucket);
         }
 	});
 }
@@ -124,7 +124,7 @@ function bucketExists(trackingId, s3, bucket, callback) {
     s3.headBucket({ Bucket: bucket }, function(err, data) {
         // console.log(JSON.stringify(err));
         // console.log(JSON.stringify(data));
-        if(data == null) { 
+        if(data === null) { 
             console.log('' + trackingId + ' Bucket ' + bucket + ' does not exist');
             callback(false);
         } else {
@@ -145,8 +145,8 @@ function createBucketIfMissing(trackingId, s3, bucket, callback) {
             s3.createBucket({ ACL: 'authenticated-read', 'Bucket': bucket }, function(err, data) {
                 // console.log(JSON.stringify(err));
                 // console.log(JSON.stringify(data));
-                if(err == null) {  } // Created
-                if(data == null) {  } // Not Created
+                if(err === null) {  } // Created
+                if(data === null) {  } // Not Created
                 callback();
             });
         }
@@ -227,9 +227,9 @@ exports.upload = function(request, response){
             emailInDatabase(trackingId, request.body.email, function(knownEmail) {
                 console.log('' + trackingId + ' enter: emailInDatabase callback');
                 if(knownEmail) {
-                    console.log('' + trackingId + ' enter: knownEmail')
+                    console.log('' + trackingId + ' enter: knownEmail');
                     getBucket(trackingId, request.body.email, function(bucket) {
-                        console.log('' + trackingId + ' enter: getBucket callback')
+                        console.log('' + trackingId + ' enter: getBucket callback');
                         // console.log('' + trackingId + ' raw bucket = ' + bucket);
                         response.send(202, 'Accepted');
                         // S3 Code

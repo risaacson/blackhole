@@ -3,11 +3,11 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , routes = require('./routes')
-  , upload = require('./routes/upload')
-  , http = require('http')
-  , path = require('path');
+var express = require('express'),
+    routes = require('./routes'),
+    upload = require('./routes/upload'),
+    http = require('http'),
+    path = require('path');
 
 var app = express();
 

@@ -34,3 +34,14 @@ Upload from the CLI
 -------------------
 
 `curl --form email='YOUR_EMAIL' --form file=@FILE http://HOST:PORT/upload`
+
+Developing
+----------
+
+We use GruntJS to automate a few development tasks and best practices. Please see the GruntJS homepage for install instructions. Grunt is not needed to execute a production instance.
+
+You can execute jshint against the JavaScript files by executing:
+`grunt jshint`
+
+You can executing nodeunit to execute the unit tests by executing:
+`grunt nodeunit`
