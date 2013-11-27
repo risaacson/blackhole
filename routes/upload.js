@@ -26,7 +26,7 @@ if(nconf.get('proxy').toLowerCase() !== "none") {
 }
 if(nconf.get('proxytype').toLowerCase() === "riakcs") {
 }else {
-  awsOptionsregion = nconf.get('region').toLowerCase();
+  awsOptions.region = nconf.get('region').toLowerCase();
 }
 var s3 = new AWS.S3(awsOptions);
 
