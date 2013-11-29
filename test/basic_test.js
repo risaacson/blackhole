@@ -4,7 +4,7 @@ exports.testSomething = function(test){
     test.done();
 };
 
-exports.testSomethingElse = function(test){
-    test.ok(false, "this assertion should fail");
-    test.done();
-};
+// exports.testSomethingElse = function(test){
+//     test.ok(false, "this assertion should fail");
+//     test.done();
+// };

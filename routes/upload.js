@@ -1,7 +1,7 @@
+var blackholeUtil = require('../util/blackholeUtil');
+
 // Might as well include the filesystem here.
 var fs = require('fs');
-
-var crypto = require('crypto');
 
 // Use nconf to get our config.
 var nconf = require('nconf');
@@ -29,30 +29,6 @@ if(nconf.get('proxytype').toLowerCase() === "riakcs") {
   awsOptions.region = nconf.get('region').toLowerCase();
 }
 var s3 = new AWS.S3(awsOptions);
-
-function currentDateTime() {
-    var currentDate = new Date();
-    var dateTime = '' + currentDate.getFullYear() +
-                     (((currentDate.getMonth()+1) < 10)?"0":"") + (currentDate.getMonth()+1) +
-                      ((currentDate.getDate() < 10)?"0":"") + currentDate.getDate() +
-                      ((currentDate.getHours() < 10)?"0":"") + currentDate.getHours() + 
-                      ((currentDate.getMinutes() < 10)?"0":"") + currentDate.getMinutes() +
-                      ((currentDate.getSeconds() < 10)?"0":"") + currentDate.getSeconds();
-    return dateTime;
-}
-
-function createTrackingId() {
-    // Based off of http://stackoverflow.com/questions/9407892/how-to-generate-random-sha1-hash-to-use-as-id-in-node-js
-    return crypto.createHash('sha1').update(crypto.randomBytes(20)).digest('hex');
-}
-
-// From http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
-// TODO make RFC 2822 compliant.
-function validateEmail(trackingId, email, callback) {
-    console.log('' + trackingId + ' enter: validateEmail'); 
-    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    callback(re.test(email));
-}
 
 function query(trackingId, sql, connection, callback) {
     console.log('' + trackingId + ' enter: query');
@@ -205,9 +181,8 @@ function logToServer(trackingId, dateTime, email, bucket, fileName) {
 /*
  * 
  */
-
 exports.upload = function(request, response){
-    var trackingId = createTrackingId();
+    var trackingId = blackholeUtil.createTrackingId();
     console.log('' + trackingId + ' enter: app.post callback');
 
     // request.files will contain the uploaded file(s),                                          
@@ -220,7 +195,7 @@ exports.upload = function(request, response){
     // console.log('' + trackingId + ' file name: ', request.files.file.name);                                           
     // console.log('' + trackingId + ' file path: ', request.files.file.path);                                           
 
-    validateEmail(trackingId, request.body.email, function(validEmail) {
+    blackholeUtil.validateEmail(trackingId, request.body.email, function(validEmail) {
         console.log('' + trackingId + ' enter: validateEmail callback');
         if(validEmail) {
             console.log('' + trackingId + ' enter: validEmail');
@@ -237,7 +212,7 @@ exports.upload = function(request, response){
                         console.log('' + trackingId + ' bucket = ' + uploadBucket);
                         createBucketIfMissing(trackingId, s3, uploadBucket, function() {
                             moveUploadToS3(trackingId, s3, uploadBucket, request.files.file);
-                            logToServer(trackingId, currentDateTime(), request.body.email, uploadBucket, request.files.file.name);
+                            logToServer(trackingId, blackholeUtil.currentDateTime(), request.body.email, uploadBucket, request.files.file.name);
                         });
                     });
                 } else {
