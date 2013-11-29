@@ -195,7 +195,7 @@ exports.upload = function(request, response){
     // console.log('' + trackingId + ' file name: ', request.files.file.name);                                           
     // console.log('' + trackingId + ' file path: ', request.files.file.path);                                           
 
-    blackholeUtil.validateEmail(trackingId, request.body.email, function(validEmail) {
+    blackholeUtil.validateEmail(request.body.email, function(validEmail) {
         console.log('' + trackingId + ' enter: validateEmail callback');
         if(validEmail) {
             console.log('' + trackingId + ' enter: validEmail');
