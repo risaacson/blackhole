@@ -13,6 +13,11 @@
     "request": "2.27.0",
     "winston": "0.7.2"
   },
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-nodeunit": "~0.2.2"
+  },
   "author": "risaacson",
   "license": "GPLv3",
   "repository": {
